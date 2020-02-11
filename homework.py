@@ -18,14 +18,13 @@ class Calculator():
     def add_record(self, current_record):
         return self.records.append(current_record)
 
-    def get_today_stats(self, currency=1):
+    def get_today_stats(self):
         today = 0
-        coefficient = {1:1, 'rub':1, 'usd':63.86, 'eur':69.69 }
 
         for record in self.records:
             if record.date == dt.datetime.strptime(NOW, '%d.%m.%Y').date():
                 today += record.amount
-        return today/coefficient[currency]
+        return today
 
 
     def get_remained(self):
@@ -56,17 +55,13 @@ class CashCalculator(Calculator):
     RUB_RATE = 1
     USD_RATE = 63.86
     EURO_RATE = 69.69
-    #currency_dictionary = {"rub":["руб","RUB"], "usd":["USD","USD"], "EURO":["Euro", "EURO"]}
+    currency_dictionary = {"rub":["руб","RUB"], "usd":["USD","USD"], "eur":["Euro", "EURO"]}
 
     def get_today_cash_remained(self, currency):
-        RUB_RATE =  1
-        USD_RATE =  60
-        EURO_RATE = 70
-        currency_dictionary = {"rub":["руб","RUB"], "usd":["USD","USD"], "eur":["Euro", "EURO"]}
 
-        Exchange_Rate = currency_dictionary[currency][1].upper() + "_RATE"
+        Exchange_Rate = "self." + self.currency_dictionary[currency][1] + "_RATE"
         balance = self.get_today_stats()
-        currency_name = currency_dictionary[currency][0]
+        currency_name = self.currency_dictionary[currency][0]
 
         if balance < self.limit:
             return "На сегодня осталось " + str(round((self.limit - balance)/eval(Exchange_Rate), 2)) + ' ' +  str(currency_name)
@@ -77,3 +72,14 @@ class CashCalculator(Calculator):
             return "Денег нет, держись: твой долг - " + str(abs(round((self.limit - balance)/eval(Exchange_Rate),2))) + " " + str(currency_name)
 
 
+# cash_calculator = CashCalculator(1000)
+#
+# # дата в параметрах не указана,
+# # так что по умолчанию к записи должна автоматически добавиться сегодняшняя дата
+# cash_calculator.add_record(Record(amount=145, comment="кофе"))
+# # и к этой записи тоже дата должна добавиться автоматически
+# cash_calculator.add_record(Record(amount=300, comment="Серёге за обед"))
+# # а тут пользователь указал дату, сохраняем её
+# cash_calculator.add_record(Record(amount=3000, comment="бар в Танин др", date="08.11.2019"))
+#
+# print(cash_calculator.get_today_stats("rub"))
